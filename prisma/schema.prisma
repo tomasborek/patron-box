@@ -6,3 +6,51 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  verified Boolean @default(false)
+  institution Institution @relation(fields: [institutionId], references: [id])
+  institutionId Int
+  reservations Reservation[]
+  password String
+}
+
+model Institution{
+  id Int @id @default(autoincrement())
+  name String @unique
+  password String?
+  emailFormat String?
+  stations Station[]
+  users User[]
+}
+
+model Station{
+  id Int @id @default(autoincrement())
+  localId Int
+  boxes Box[]
+  institution Institution @relation(fields: [institutionId], references: [id])
+  institutionId Int
+}
+
+model Box{
+  id Int @id @default(autoincrement())
+  localId Int
+  station Station @relation(fields: [stationId], references: [id])
+  stationId Int
+  reservation Reservation? 
+}
+
+model Reservation{
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  box Box @relation(fields: [boxId], references: [id])
+  boxId Int @unique
+  length Int
+  startTime DateTime @default(now())
+  endTime DateTime
+}
