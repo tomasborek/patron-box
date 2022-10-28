@@ -1,0 +1,57 @@
+@import "../../styles/partials/variables.scss";
+@import "../../styles/partials/mixins.scss";
+footer.footer {
+  background-color: $mainGrayColor;
+  width: 100%;
+  padding: 2rem;
+  color: white;
+  > .inner_footer {
+    display: flex;
+    justify-content: space-between;
+    @include for-phone-only {
+      flex-direction: column;
+      gap: 2rem 0;
+    }
+    > section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem 0;
+      &:first-child {
+        > p {
+          color: $lightGrayColor;
+        }
+      }
+      &:nth-child(2) {
+        > ul > li > a {
+          color: $lightGrayColor;
+          cursor: pointer;
+          transition: all 250ms;
+          &:hover {
+            color: $mainYellowColor;
+          }
+        }
+      }
+      &:nth-child(3) {
+        > ul {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem 0;
+          > li {
+            display: flex;
+            align-items: center;
+            gap: 0 1rem;
+            color: $lightGrayColor;
+            cursor: pointer;
+            transition: all 250ms;
+            &:hover {
+              color: $mainYellowColor;
+            }
+          }
+        }
+      }
+    }
+  }
+}

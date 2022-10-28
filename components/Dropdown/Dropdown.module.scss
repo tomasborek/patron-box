@@ -1,0 +1,41 @@
+@import "../../styles/partials/variables.scss";
+
+.dropdown {
+  background-color: $lighterGrayColor;
+  border-radius: $roundedSmall;
+  padding: 1rem;
+  width: 100%;
+  color: $lightGrayColor;
+  cursor: pointer;
+  > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    > i {
+      transition: all 250ms;
+      &.open {
+        transform: rotate(-180deg);
+      }
+    }
+  }
+  > ul {
+    max-height: 0;
+    transition: all 250ms;
+    overflow: hidden;
+    background-color: $lighterGrayColor;
+    > li {
+      padding: 0.5rem;
+      transition: all 250ms;
+      border-radius: $roundedSmall;
+      &:hover {
+        background-color: $lighterGrayColorHover;
+      }
+      &:first-child {
+        margin-top: 1rem;
+      }
+    }
+    &.open {
+      max-height: 500px;
+    }
+  }
+}

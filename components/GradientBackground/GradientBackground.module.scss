@@ -1,0 +1,26 @@
+@import "../../styles/partials/variables.scss";
+.gradient_bg {
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  > .dot {
+    position: absolute;
+
+    border-radius: 50%;
+
+    &:first-child {
+      transform: translate(-50%, 50%);
+      background-color: #a8ccc9;
+      left: 0;
+      bottom: 0;
+    }
+    &:last-child {
+      transform: translate(50%, -50%);
+      background-color: $mainYellowColor;
+      right: 0;
+      top: 0;
+    }
+  }
+}

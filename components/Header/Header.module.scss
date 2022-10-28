@@ -1,0 +1,69 @@
+@import "../../styles/partials/variables.scss";
+@import "../../styles/partials/mixins.scss";
+header.header {
+  align-items: center;
+  background-color: white;
+  padding: 1rem 2rem;
+  box-shadow: $shadowMedium;
+  margin-bottom: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  > img {
+    width: 30px;
+    cursor: pointer;
+    @include for-phone-only {
+      width: 20px;
+    }
+  }
+  > nav {
+    display: block;
+  }
+  > nav > ul {
+    display: flex;
+    gap: 0 1rem;
+    @include for-phone-only {
+      font-size: 14px;
+      gap: 0 0.5rem;
+    }
+    > li {
+      position: relative;
+      cursor: pointer;
+      > a {
+        color: $lightGrayColor;
+      }
+      &::before {
+        transition: all 250ms;
+        content: "";
+        width: 100%;
+        height: 2px;
+        border-radius: 1px;
+        background-color: $mainYellowColor;
+        position: absolute;
+        bottom: -1rem;
+        opacity: 0;
+      }
+      &:hover {
+        &::before {
+          opacity: 100%;
+        }
+      }
+    }
+  }
+
+  > .login {
+    border: 1px solid $lighterGrayColor;
+    border-radius: $roundedMedium;
+    padding: 0.75rem;
+    cursor: pointer;
+    > i {
+      transition: all 250ms;
+    }
+    &:hover {
+      > i {
+        color: $mainYellowColor;
+      }
+    }
+  }
+}

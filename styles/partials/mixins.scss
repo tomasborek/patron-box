@@ -1,0 +1,16 @@
+//Media queries
+@mixin for-phone-only {
+  @media (max-width: $phoneMaxViewport) {
+    @content;
+  }
+}
+@mixin for-tablet-down {
+  @media (max-width: $tabletMaxViewport) {
+    @content;
+  }
+}
+@mixin for-desktop-down {
+  @media (max-width: $desktopMaxViewport) {
+    @content;
+  }
+}

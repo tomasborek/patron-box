@@ -1,0 +1,28 @@
+@use "sass:color";
+//colors
+$textColor: #333;
+$defaultBgColor: #f9f9f9;
+$mainYellowColor: #f1a208;
+$mainYellowColorHover: darken($mainYellowColor, 5%);
+$mainGrayColor: #171d1c;
+$lightGrayColor: #adadad;
+$lighterGrayColor: #f2f0f0;
+$lighterGrayColorHover: darken(#f2f0f0, 5%);
+
+//Sizes
+$roundedSmall: 5px;
+$roundedMedium: 10px;
+$roundedBig: 15px;
+$h1Size: 32px;
+$h2Size: 24px;
+$h3Size: 20px;
+$lgTextSize: 18px;
+$smTextSize: 14px;
+
+//View widths
+$phoneMaxViewport: 699px;
+$tabletMaxViewport: 1199px;
+$desktopMaxViewport: 1799px;
+
+//others
+$shadowMedium: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);

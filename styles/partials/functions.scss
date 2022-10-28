@@ -1,0 +1,4 @@
+@use "sass:color";
+@function shadowColor($color) {
+  @return 0 0 0.75rem color.adjust($color, $alpha: -0.5);
+}

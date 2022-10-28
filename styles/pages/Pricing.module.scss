@@ -1,0 +1,33 @@
+@import "../partials/variables.scss";
+.pricing {
+  > main {
+    > h1 {
+      text-align: center;
+      margin: 4rem 0;
+    }
+    > table {
+      box-shadow: $shadowMedium;
+      width: 100%;
+      background-color: white;
+      border-collapse: collapse;
+      border-radius: $roundedMedium;
+      overflow: hidden;
+      > caption {
+        background-color: white;
+        padding: 1rem;
+      }
+      > tbody > tr {
+        > td {
+          padding: 1rem;
+          text-align: center;
+          &:first-child {
+            border-right: 1px solid $lighterGrayColorHover;
+          }
+        }
+        &:nth-child(odd) {
+          background-color: $lighterGrayColor;
+        }
+      }
+    }
+  }
+}

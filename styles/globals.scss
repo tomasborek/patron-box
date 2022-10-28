@@ -1,0 +1,45 @@
+//partials
+@import "./partials/variables.scss";
+@import "./partials/reset.scss";
+@import "./partials/base.scss";
+@import "./partials/mixins.scss";
+@import "./partials/functions.scss";
+
+//global classes
+.container {
+  width: 100%;
+  padding: 0 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.big-container {
+  width: 100%;
+  padding: 0 1rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.gradient-bg {
+  background-color: $mainGrayColor;
+  position: relative;
+  color: white;
+  overflow: hidden;
+}
+
+.btn {
+  padding: 1rem;
+  border-radius: $roundedMedium;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 250ms;
+
+  &.main {
+    background-color: $mainYellowColor;
+    color: white;
+    box-shadow: shadowColor($mainYellowColor);
+    &:hover {
+      background-color: $mainYellowColorHover;
+    }
+  }
+}
