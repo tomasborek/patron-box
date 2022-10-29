@@ -15,13 +15,14 @@ interface CurrentUser {
   id: number;
   name: string;
   email: string;
+  institution: string;
 }
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<null | CurrentUser>(null);
   const authChange = async () => {
     const token = localStorage.getItem("auth-token");
     if (token) {
-      const { payload } = jwt.decode(token);
+      const payload = jwt.decode(token);
       return setCurrentUser(payload);
     }
     setCurrentUser(null);

@@ -1,0 +1,11 @@
+@import "../../styles/partials/variables.scss";
+.error {
+  background-color: $errorColorOpacity;
+  color: $errorColor;
+  padding: 0.5rem;
+  width: 100%;
+  border-radius: $roundedMedium;
+  > p {
+    text-align: center;
+  }
+}

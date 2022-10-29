@@ -24,6 +24,7 @@ model Institution{
   name String @unique
   password String?
   emailFormat String?
+  authForm String
   stations Station[]
   users User[]
 }

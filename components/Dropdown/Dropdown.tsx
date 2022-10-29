@@ -3,46 +3,63 @@ import React, { ReactNode, useState, useEffect } from "react";
 import styles from "./Dropdown.module.scss";
 
 const Dropdown = ({
-  items,
+  items = null,
   name,
-  returnValue = null,
+  onChange = null,
+  action = false,
+  children = null,
 }: {
-  items: string[];
+  items?: string[] | null;
   name: string;
-  returnValue?: (value: string | null) => any;
+  onChange?: (item: string) => void | null;
+  action?: boolean;
+  children?: ReactNode;
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [currentValue, setCurrentValue] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!returnValue) return;
-    returnValue(currentValue);
-  }, [currentValue]);
-
-  return (
-    <div
-      onClick={() => setOpen((prev) => !prev)}
-      className={`${styles.dropdown} dropdown`}
-    >
-      <div className={`dropdown-content`}>
-        <p className={`dropdown-content`}>
-          {currentValue ? currentValue : name}
-        </p>
-        <i
-          className={`fas fa-chevron-down dropdown-content ${
-            open ? styles.open : ""
-          }`}
-        ></i>
+  if (action) {
+    return (
+      <div
+        onClick={() => setOpen((prev) => !prev)}
+        className={`${styles.dropdown} ${styles.action} dropdown`}
+      >
+        <div className={styles.shield}>
+          <p>{name}</p>
+          <i className={`fas fa-chevron-down ${open ? styles.open : ""}`}></i>
+        </div>
+        <ul className={` ${open ? styles.open : ""}`}>{children}</ul>
       </div>
-      <ul className={`dropdown-content ${open ? styles.open : ""}`}>
-        {items.map((item, index) => (
-          <li onClick={() => setCurrentValue(item)} key={index}>
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div
+        onClick={() => setOpen((prev) => !prev)}
+        className={`${styles.dropdown} dropdown`}
+      >
+        <div className={styles.shield}>
+          <p>{currentValue ? currentValue : name}</p>
+          <i className={`fas fa-chevron-down  ${open ? styles.open : ""}`}></i>
+        </div>
+        <ul className={`${open ? styles.open : ""}`}>
+          {items.length ? (
+            items.map((item, index) => (
+              <li
+                onClick={() => {
+                  onChange(item);
+                  setCurrentValue(item);
+                }}
+                key={index}
+              >
+                {item}
+              </li>
+            ))
+          ) : (
+            <li>Žádné výsledky</li>
+          )}
+        </ul>
+      </div>
+    );
+  }
 };
 
 export default Dropdown;

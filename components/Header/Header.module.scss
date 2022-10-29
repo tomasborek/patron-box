@@ -10,15 +10,22 @@ header.header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  > img {
-    width: 30px;
-    cursor: pointer;
-    @include for-phone-only {
-      width: 20px;
+  .brand {
+    flex: 1;
+    > img {
+      width: 30px;
+      cursor: pointer;
+      @include for-phone-only {
+        width: 20px;
+      }
     }
   }
   > nav {
+    flex: 1;
     display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   > nav > ul {
     display: flex;
@@ -52,12 +59,24 @@ header.header {
     }
   }
 
+  > .user_info {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    > div {
+      width: 200px;
+    }
+  }
+
   > .login {
-    border: 1px solid $lighterGrayColor;
-    border-radius: $roundedMedium;
-    padding: 0.75rem;
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
     cursor: pointer;
     > i {
+      border: 1px solid $lighterGrayColor;
+      border-radius: $roundedMedium;
+      padding: 0.75rem;
       transition: all 250ms;
     }
     &:hover {

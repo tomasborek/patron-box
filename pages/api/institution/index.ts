@@ -36,6 +36,7 @@ export default async function Hanlder(
         name: body.name,
         password: hashedPassword ? hashedPassword : null,
         emailFormat: body.emailFormat ? body.emailFormat : null,
+        authForm: body.authForm,
       },
     });
 
@@ -50,4 +51,5 @@ const newInstitutionSchema = Joi.object({
   name: Joi.string().required().min(3).max(255),
   password: Joi.string(),
   emailFormat: Joi.string(),
+  authForm: Joi.string().allow("password", "email").required(),
 }).required();
