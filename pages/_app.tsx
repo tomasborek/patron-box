@@ -3,8 +3,12 @@ import React from "react";
 import Head from "next/head";
 //styles
 import "../styles/globals.scss";
+//contexts
+import { QueryClientProvider, QueryClient } from "react-query";
+import AuthProvider from "../contexts/AuthContext";
 
 export default function MyApp({ Component, pageProps }) {
+  const queryClient = new QueryClient();
   return (
     <>
       <Head>
@@ -22,7 +26,11 @@ export default function MyApp({ Component, pageProps }) {
           content="PatronBox jsou úschovné stanice s boxy, které slouží ke krátkodobému uložení předmětů, cenností a věcí."
         />
       </Head>
-      <Component {...pageProps} />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Component {...pageProps} />
+        </AuthProvider>
+      </QueryClientProvider>
     </>
   );
 }
