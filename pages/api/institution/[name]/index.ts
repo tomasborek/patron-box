@@ -26,17 +26,24 @@ export default async function Hanlder(
 }
 
 const editInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
-  const name = Array.isArray(req.query.name)
+  const name: string = Array.isArray(req.query.name)
     ? req.query.name[0]
     : req.query.name;
   const body = req.body;
-  if (
-    (body.password && body.authForm === "email") ||
-    (body.emailFormat && body.authForm === "password")
-  ) {
-    return res.status(400).send({
-      message: "Wrong auth format combination.",
-    });
+  if (body.authForm) {
+    if (body.authForm !== "email" && body.authForm !== "password") {
+      return res.status(400).send({ message: "Auth form invalid" });
+    }
+    if (body.authForm === "password" && (body.emailFormat || !body.password)) {
+      return res
+        .status(400)
+        .send({ message: "Invalid data for password auth form." });
+    }
+    if (body.authForm === "email" && (body.password || !body.emailFormat)) {
+      return res
+        .status(400)
+        .send({ message: "Invalid data for email auth form." });
+    }
   }
   if (body.password) {
     const hashedPassword = await bcrypt.hash(body.password, 10);
@@ -48,6 +55,19 @@ const editInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
         name,
       },
     });
+    if (!institution) {
+      return res.status(404).send({
+        message: "Institution not found",
+      });
+    }
+    if (
+      (institution.authForm === "email" && body.password) ||
+      (institution.authForm === "password" && body.emailFormat)
+    ) {
+      return res
+        .status(400)
+        .send({ message: "Cannot change that without changin auth form" });
+    }
     const editedInstitution = await prisma.institution.update({
       where: {
         name,
@@ -68,6 +88,11 @@ const editInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
             ? body.emailFormat
             : institution.emailFormat,
       },
+      select: {
+        name: body.name ? true : false,
+        authForm: body.authForm ? true : false,
+        emailFormat: body.emailFormat ? true : false,
+      },
     });
 
     return res.status(200).send(editedInstitution);
@@ -76,12 +101,19 @@ const editInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 const deleteInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
-  const name = Array.isArray(req.query.name)
+  const name: string = Array.isArray(req.query.name)
     ? req.query.name[0]
     : req.query.name;
 
   try {
     await prisma.user.deleteMany({
+      where: {
+        institution: {
+          name,
+        },
+      },
+    });
+    await prisma.station.deleteMany({
       where: {
         institution: {
           name,
@@ -94,13 +126,13 @@ const deleteInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
-    return res.status(200).send(deletedInstitution);
+    return res.status(200).send(null);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-const institutionDataSchema = Joi.object({
+const institutionSchema = Joi.object({
   name: Joi.string().min(3).max(255),
   password: Joi.string().min(3).max(255),
   emailFormat: Joi.string().min(3).max(255),

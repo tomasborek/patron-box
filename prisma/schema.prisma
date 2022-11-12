@@ -17,6 +17,7 @@ model User{
   institutionId Int
   reservations Reservation[]
   password String
+  admin Boolean @default(false)
 }
 
 model Institution{
@@ -42,7 +43,9 @@ model Box{
   localId Int
   station Station @relation(fields: [stationId], references: [id])
   stationId Int
-  reservation Reservation? 
+  reservation Reservation?
+  reservationId Int?
+  available Boolean @default(true)
 }
 
 model Reservation{

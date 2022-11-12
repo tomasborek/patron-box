@@ -8,15 +8,19 @@ const Dropdown = ({
   onChange = null,
   action = false,
   children = null,
+  defaultValue = null,
 }: {
   items?: string[] | null;
   name: string;
   onChange?: (item: string) => void | null;
   action?: boolean;
   children?: ReactNode;
+  defaultValue?: string;
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [currentValue, setCurrentValue] = useState<string | null>(null);
+  const [currentValue, setCurrentValue] = useState<string | null>(
+    defaultValue ? defaultValue : null
+  );
   if (action) {
     return (
       <div
@@ -41,7 +45,7 @@ const Dropdown = ({
           <i className={`fas fa-chevron-down  ${open ? styles.open : ""}`}></i>
         </div>
         <ul className={`${open ? styles.open : ""}`}>
-          {items.length ? (
+          {items?.length ? (
             items.map((item, index) => (
               <li
                 onClick={() => {

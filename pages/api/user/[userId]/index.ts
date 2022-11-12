@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../db/prisma";
-import { authorize } from "../../../../utils/auth";
+import { authorize, authorizeAdmin } from "../../../../utils/auth";
 
 export default async function Hanlder(
   req: NextApiRequest,
@@ -18,13 +18,13 @@ export default async function Hanlder(
 }
 
 const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
-  const id: string = Array.isArray(req.query.userId)
-    ? req.query.userId[0]
-    : req.query.userId;
+  const id: number = Array.isArray(req.query.userId)
+    ? parseInt(req.query.userId[0])
+    : parseInt(req.query.userId);
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id: Number.parseInt(id),
+        id,
       },
       select: {
         id: true,
@@ -35,13 +35,10 @@ const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
     if (!user) {
-      return res.status(404).send({
-        message: "User not found.",
-      });
+      return res.status(404).send({ message: "User not found." });
     }
     return res.status(200).send(user);
   } catch (error) {
-    console.log(error);
     return res.status(500).send(error);
   }
 };
@@ -50,19 +47,17 @@ const deleteUser = async (req: NextApiRequest, res: NextApiResponse) => {
   const id: number = Array.isArray(req.query.userId)
     ? Number.parseInt(req.query.userId[0])
     : Number.parseInt(req.query.userId);
-  if (!authorize(token, id)) {
-    return res.status(401).send({
-      message: "Unauthorized",
-    });
+  if (!authorize(token, id) && !authorizeAdmin(token)) {
+    return res.status(401).send({ message: "Unauthorized" });
   }
   try {
-    const user = await prisma.user.delete({
+    await prisma.user.delete({
       where: {
-        id: id,
+        id,
       },
     });
 
-    return res.status(200).send(user);
+    return res.status(200).send(null);
   } catch (error) {
     console.log(error);
     return res.status(500).send(error);

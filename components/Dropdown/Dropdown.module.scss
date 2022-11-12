@@ -1,6 +1,8 @@
 @import "../../styles/partials/variables.scss";
 
 .dropdown {
+  position: relative;
+  z-index: 3;
   background-color: $lighterGrayColor;
   border-radius: $roundedSmall;
   padding: 1rem;

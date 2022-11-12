@@ -16,19 +16,23 @@ interface CurrentUser {
   name: string;
   email: string;
   institution: string;
+  token: string;
+  admin: boolean;
 }
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<null | CurrentUser>(null);
+  const [currentUserReady, setCurrentUserReady] = useState<boolean>(false);
   const authChange = async () => {
     const token = localStorage.getItem("auth-token");
     if (token) {
       const payload = jwt.decode(token);
-      return setCurrentUser(payload);
+      return setCurrentUser({ ...payload, token });
     }
     setCurrentUser(null);
   };
   useEffect(() => {
     authChange();
+    setCurrentUserReady(true);
   }, []);
 
   const logIn = (token: string) => {
@@ -43,6 +47,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = {
     currentUser,
+    currentUserReady,
     logIn,
     logOut,
   };

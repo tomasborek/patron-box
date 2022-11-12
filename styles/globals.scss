@@ -33,12 +33,16 @@
   font-weight: bold;
   cursor: pointer;
   transition: all 250ms;
+  > svg {
+    height: 10px;
+  }
   &.loading {
     pointer-events: none;
     opacity: 50%;
   }
-  > svg {
-    height: 10px;
+  &.error {
+    background-color: $errorColor;
+    color: white;
   }
 
   &.main {

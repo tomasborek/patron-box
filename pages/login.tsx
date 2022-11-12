@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 //layouts
 import AuthLayout from "../Layouts/AuthLayout/AuthLayout";
 //componetns
-import ErrorNotification from "../components/ErrorNotification/ErrorNotification";
+import Notification from "../components/Notification/Notification";
 //contexts
 import { useMutation } from "react-query";
 import axios from "axios";
@@ -17,17 +17,18 @@ export default function Login() {
   //contexts
   const { logIn } = useAuth();
   const router = useRouter();
+  //queries
   const loginMutation = useMutation(
     (formData: any) => {
       return axios({
         method: "POST",
-        url: "/api/user/login",
+        url: "/api/auth",
         data: formData,
       });
     },
     {
-      onSuccess: (data: any) => {
-        logIn(data.data.token);
+      onSuccess: ({ data }: { data: any }) => {
+        logIn(data.token);
         router.push("/");
       },
       onError: (error: any) => {
@@ -57,7 +58,7 @@ export default function Login() {
       </Head>
       <AuthLayout>
         <form onSubmit={loginSubmit}>
-          <ErrorNotification error={globalError} />
+          <Notification severity="error" message={globalError} />
           <h2>Přihlášení</h2>
           <section>
             <input

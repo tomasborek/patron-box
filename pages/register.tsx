@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import AuthLayout from "../Layouts/AuthLayout/AuthLayout";
 //components
 import Dropdown from "../components/Dropdown/Dropdown";
-import ErrorNotification from "../components/ErrorNotification/ErrorNotification";
+import Notification from "../components/Notification/Notification";
 import { ThreeDots } from "react-loading-icons";
 //dependencies
 import { useQuery, useMutation, useQueryClient } from "react-query";
@@ -50,7 +50,6 @@ export default function Register({
     },
     {
       onSuccess: (data: any) => {
-        console.log(data);
         logIn(data.data.token);
         router.push("/");
       },
@@ -74,8 +73,8 @@ export default function Register({
   };
 
   const submitRegistration = (e) => {
-    setGlobalError(null);
     e.preventDefault();
+    setGlobalError(null);
     let formData = Object.fromEntries(new FormData(e.target));
     formData = {
       ...formData,
@@ -103,6 +102,7 @@ export default function Register({
     }
     //The formatData object will be sent to the server - we don't want password confirmation sent to the server
     delete formData.passwordConfirm;
+    console.log(formData);
     registerMutation.mutate(formData);
   };
 
@@ -113,7 +113,7 @@ export default function Register({
       </Head>
       <AuthLayout>
         <form onSubmit={submitRegistration}>
-          <ErrorNotification error={globalError} />
+          <Notification severity="error" message={globalError} />
           <h2>Registrace</h2>
           <section>
             <Dropdown

@@ -7,15 +7,17 @@ export default async function Hanlder(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const stationId = Array.isArray(req.query.stationId)
+  const stationId: number = Array.isArray(req.query.stationId)
     ? Number.parseInt(req.query.stationId[0])
     : Number.parseInt(req.query.stationId);
-  if (req.method === "PATCH") {
-    return editStation(req, res, stationId);
-  } else if (req.method === "POST") {
+  const institutionName: string = Array.isArray(req.query.name)
+    ? req.query.name[0]
+    : req.query.name;
+
+  if (req.method === "POST") {
     return checkPassword();
   } else if (req.method === "DELETE") {
-    return deleteStation(req, res, stationId);
+    return deleteStation(req, res, stationId, institutionName);
   } else {
     return res.status(405).send({
       message: "Method not allowed",
@@ -23,46 +25,11 @@ export default async function Hanlder(
   }
 }
 
-const editStation = async (
-  req: NextApiRequest,
-  res: NextApiResponse,
-  id: number
-) => {
-  const token: string = req.headers.authorization;
-  if (!authorizeAdmin(token)) {
-    return res.status(401).send({
-      message: "Unaithorized",
-    });
-  }
-  const body = req.body;
-  const { error } = editStationSchema.validate(body);
-  if (error) {
-    return res.status(400).send(error);
-  }
-
-  try {
-    const station = await prisma.station.findUnique({ where: { id } });
-    const editedStation = await prisma.station.update({
-      where: {
-        id,
-      },
-      data: {
-        localId: body.localId ? body.localId : station.localId,
-        boxes: {
-          create: body.boxes ? body.newBoxes : [],
-        },
-      },
-    });
-    return res.status(200).send(editedStation);
-  } catch (error) {
-    return res.status(500).send(error);
-  }
-};
-
 const deleteStation = async (
   req: NextApiRequest,
   res: NextApiResponse,
-  id: number
+  localId: number,
+  institutionName: string
 ) => {
   const token: string = req.headers.authorization;
   if (!authorizeAdmin(token)) {
@@ -71,22 +38,34 @@ const deleteStation = async (
     });
   }
   try {
-    const deleteBoxes = await prisma.station.update({
+    const station = await prisma.station.findFirst({
       where: {
-        id,
+        AND: [
+          {
+            institution: {
+              name: institutionName,
+            },
+          },
+          {
+            localId: localId,
+          },
+        ],
       },
-      data: {
-        boxes: {
-          deleteMany: {},
+    });
+    await prisma.box.deleteMany({
+      where: {
+        station: {
+          id: station.id,
         },
       },
     });
-    const deletedStation = await prisma.station.delete({
+
+    await prisma.station.delete({
       where: {
-        id,
+        id: station.id,
       },
     });
-    return res.status(200).send(deletedStation);
+    return res.status(200).send(null);
   } catch (error) {
     return res.status(500).send(error);
   }
@@ -94,12 +73,3 @@ const deleteStation = async (
 const checkPassword = async () => {
   //Cheks password
 };
-
-const editStationSchema = Joi.object({
-  localId: Joi.number(),
-  newBoxes: Joi.array().items(
-    Joi.object({
-      localId: Joi.number(),
-    })
-  ),
-}).required();
