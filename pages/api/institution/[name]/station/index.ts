@@ -2,6 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import Joi from "joi";
 import { prisma } from "../../../../../db/prisma";
 import { authorizeAdmin } from "../../../../../utils/auth";
+//interfaces
+interface Params {
+  institutionName: string;
+}
 
 export default async function Hanlder(
   req: NextApiRequest,
@@ -10,7 +14,7 @@ export default async function Hanlder(
   const institutionName = Array.isArray(req.query.name)
     ? req.query.name[0]
     : req.query.name;
-  const params = {
+  const params: Params = {
     institutionName,
   };
   if (req.method === "GET") {
@@ -27,9 +31,8 @@ export default async function Hanlder(
 const createStation = async (
   req: NextApiRequest,
   res: NextApiResponse,
-  params: { institutionName: string }
+  params: Params
 ) => {
-  const { institutionName } = params;
   const token: string = req.headers.authorization;
   const body = req.body;
   if (!authorizeAdmin(token))
@@ -47,7 +50,7 @@ const createStation = async (
   try {
     const institution = await prisma.institution.findUnique({
       where: {
-        name: institutionName,
+        name: params.institutionName,
       },
     });
 
@@ -61,7 +64,6 @@ const createStation = async (
         },
       },
     });
-    console.log(newBoxes);
     const existingLocalIds = existingStations.map((station) => station.localId);
     if (existingLocalIds.includes(Number.parseInt(body.localId))) {
       return res.status(400).send({
@@ -74,7 +76,7 @@ const createStation = async (
         localId: Number.parseInt(body.localId),
         institution: {
           connect: {
-            name: institutionName,
+            name: params.institutionName,
           },
         },
         boxes: {
@@ -90,18 +92,20 @@ const createStation = async (
 const getStations = async (
   req: NextApiRequest,
   res: NextApiResponse,
-  params: { institutionName: string }
+  params: Params
 ) => {
-  const { institutionName } = params;
-  const token = req.headers.authorization;
+  const token: string = req.headers.authorization;
   if (!authorizeAdmin(token))
     return res.status(401).send({ message: "Unauthorized" });
   try {
     const stations = await prisma.station.findMany({
-      where: { institution: { name: institutionName } },
-      include: { boxes: { select: { localId: true, available: true } } },
+      where: { institution: { name: params.institutionName } },
+      include: {
+        boxes: {
+          select: { localId: true, available: true, reservation: true },
+        },
+      },
     });
-
     return res.status(200).send(stations);
   } catch (error) {
     return res.status(500).send(error);
