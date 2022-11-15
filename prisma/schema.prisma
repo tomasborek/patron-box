@@ -55,6 +55,7 @@ model Reservation{
   box Box @relation(fields: [boxId], references: [id])
   boxId Int @unique
   length Int
+  code String
   startTime DateTime @default(now())
   endTime DateTime
 }
