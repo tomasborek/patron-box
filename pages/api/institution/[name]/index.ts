@@ -8,13 +8,9 @@ export default async function Hanlder(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const token: string = req.headers.authorization;
-  if (!authorizeAdmin(token)) {
-    return res.status(401).send({
-      messsage: "Unauthorized",
-    });
-  }
-  if (req.method === "PATCH") {
+  if (req.method === "GET") {
+    return getInstitution(req, res);
+  } else if (req.method === "PATCH") {
     return editInstitution(req, res);
   } else if (req.method === "DELETE") {
     return deleteInstitution(req, res);
@@ -25,7 +21,25 @@ export default async function Hanlder(
   }
 }
 
+const getInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
+  const name = Array.isArray(req.query.name)
+    ? req.query.name[0]
+    : req.query.name;
+  try {
+    const institution = await prisma.institution.findUnique({
+      where: { name },
+    });
+    if (!institution)
+      return res.status(404).send({ message: "Institution not found." });
+    return res.status(200).send(institution);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
 const editInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
+  const token: string = req.headers.authorization;
+  if (!authorizeAdmin(token))
+    return res.status(401).send({ messsage: "Unauthorized" });
   const name: string = Array.isArray(req.query.name)
     ? req.query.name[0]
     : req.query.name;
@@ -101,6 +115,9 @@ const editInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 const deleteInstitution = async (req: NextApiRequest, res: NextApiResponse) => {
+  const token: string = req.headers.authorization;
+  if (!authorizeAdmin(token))
+    return res.status(401).send({ messsage: "Unauthorized" });
   const name: string = Array.isArray(req.query.name)
     ? req.query.name[0]
     : req.query.name;
