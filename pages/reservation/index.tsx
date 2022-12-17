@@ -7,114 +7,54 @@ import { useRouter } from "next/router";
 //layouts
 import Layout from "../../Layouts/Layout/Layout";
 //components
-import Dropdown from "../../components/Dropdown/Dropdown";
 import Loading from "../../components/Loading/Loading";
 import Notification from "../../components/Notification/Notification";
-//dependencies
-import { useMutation, useQuery } from "react-query";
-import axios from "axios";
 //contexts
 import { useAuth } from "../../contexts/AuthContext";
+import DataInput from "./Components/DataInput/DataInput";
+//hooks
+import { useGetStations } from "../../hooks/queryHooks";
+import { useNotification } from "../../hooks/hooks";
+import Summary from "./Components/Summary/Summary";
+import { useMutation } from "react-query";
+import axios from "axios";
 //interface
-interface Box {
-  localId: number;
-  available: boolean;
-  reservation: object | null;
-}
-interface Station {
-  id: number;
-  localId: number;
-  institutionId: number;
-  boxes: Box[];
+import { Station, Alert, CurrentUser } from "../../interfaces/interfaces";
+interface MutationProps {
+  boxId: number;
+  length: number;
+  selectedStation: Station;
 }
 
 export default function Reservation() {
-  const [length, setLength] = useState<number | null>(null);
-  const { currentUser } = useAuth();
-  const [selectedStation, setSelectedStation] = useState<Station | null>(null);
+  //contexts
+  const { currentUser }: { currentUser: CurrentUser } = useAuth();
   const router = useRouter();
-  const [notification, setNotification] = useState<{
-    severity: string;
-    message: string;
-  } | null>(null);
+
+  //state
+  const [length, setLength] = useState<number | null>(null);
+  const [selectedStation, setSelectedStation] = useState<Station | null>(null);
+  const [notification, setNotification] = useState<Alert | null>(null);
+  const notify = useNotification(setNotification);
+
   //queries
-  const { data: stations, refetch: stationsRefetch } = useQuery(
-    "stations",
-    () => {
-      return axios({
-        method: "GET",
-        url: `/api/institution/${currentUser.institution}/station`,
-        headers: {
-          authorization: `Bearer ${currentUser.token}`,
-        },
-      });
-    },
-    { enabled: false }
-  );
+  const { stations, stationsQuery } = useGetStations();
   const createReservation = useMutation(
-    (boxId: number) => {
+    ({ boxId, length, selectedStation }: MutationProps) => {
       return axios({
         method: "POST",
-        url: `/api/institution/${currentUser.institution}/station/${selectedStation.localId}/box/${boxId}/reservation`,
+        url: `/api/station/${selectedStation.id}/box/${boxId}/reservation`,
         headers: {
-          authorization: `Bearer ${currentUser.token}`,
+          authorization: currentUser ? `Bearer ${currentUser.token}` : null,
         },
-        data: {
-          length,
-        },
+        data: { length },
       });
     },
     {
-      onSuccess: ({ data }) => {
-        router.push(`/reservation/complete/${data.id}`);
-      },
-      onError: () => {
-        setNotification({
-          severity: "error",
-          message: "Něco se pokazilo",
-        });
-      },
+      onSuccess: ({ data }) => router.push(`/reservation/complete/${data.id}`),
+      onError: () => notify("error", "Něco se pokazilo"),
     }
   );
-
-  //side effects
-  useEffect(() => {
-    if (!currentUser) return;
-    stationsRefetch();
-  }, [currentUser]);
-
-  //functions
-  const selectStation = (localId: number) => {
-    setSelectedStation(
-      stations.data.filter((station) => station.localId === localId)[0]
-    );
-  };
-
-  const submit = () => {
-    if (!selectedStation) {
-      return setNotification({
-        severity: "error",
-        message: "Vyberte prosím stanici.",
-      });
-    }
-    if (!length) {
-      return setNotification({
-        severity: "error",
-        message: "Zadejte prosím délku rezervace.",
-      });
-    }
-
-    const validBox: Box | undefined = selectedStation.boxes.filter(
-      (box: Box) => box.reservation === null
-    )[0];
-    if (!validBox) {
-      return setNotification({
-        severity: "error",
-        message: "Tato stanice není volná.",
-      });
-    }
-    createReservation.mutate(validBox.localId);
-  };
 
   return (
     <>
@@ -124,63 +64,20 @@ export default function Reservation() {
 
       <Layout>
         <div className={`${styles.reservation} container`}>
-          {notification && (
-            <Notification
-              severity={notification.severity}
-              message={notification.message}
-            />
-          )}
+          <Notification notification={notification} />
           <h1>Rezervace</h1>
-          {stations && !createReservation.isLoading ? (
+          {stationsQuery.isSuccess && !createReservation.isLoading ? (
             <>
-              <section>
-                <section>
-                  <label>Zvolit stanici</label>
-                  <Dropdown
-                    name="Stanice"
-                    onChange={(item) =>
-                      selectStation(parseInt(item.split(" ")[1]))
-                    }
-                    items={stations.data.map((station: Station, index) => {
-                      let available = false;
-                      station.boxes.forEach((box: Box) => {
-                        if (!box.reservation) {
-                          available = true;
-                        }
-                      });
-                      if (available) {
-                        return `Stanice ${station.localId} - ${currentUser.institution}`;
-                      }
-                    })}
-                  />
-                </section>
-                <section>
-                  <label>Zvolit délku rezervace</label>
-                  <Dropdown
-                    name="Délka"
-                    onChange={(item) => setLength(parseInt(item.split(" ")[0]))}
-                    items={[
-                      "1 hodina",
-                      "3 hodiny",
-                      "6 hodin",
-                      "12 hodin",
-                      "24 hodin",
-                      "48 hodin",
-                      "72 hodin",
-                    ]}
-                  />
-                </section>
-              </section>
-              <section>
-                <section>
-                  <p>0 hodin</p>
-                  <h3>0,00Kč</h3>
-                  <p>Žádná stanice</p>
-                </section>
-                <button onClick={submit} className="btn main">
-                  Dokončit a zaplatit
-                </button>
-              </section>
+              <DataInput
+                setSelectedStation={setSelectedStation}
+                setLength={setLength}
+              />
+              <Summary
+                createReservation={createReservation.mutate}
+                length={length}
+                notify={notify}
+                selectedStation={selectedStation}
+              />
             </>
           ) : (
             <Loading />

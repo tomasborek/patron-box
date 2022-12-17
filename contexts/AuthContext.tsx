@@ -11,11 +11,10 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-interface CurrentUser {
+export interface CurrentUser {
   id: number;
   name: string;
   email: string;
-  institution: string;
   token: string;
   admin: boolean;
 }

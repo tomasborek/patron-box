@@ -1,28 +1,27 @@
 import React from "react";
+import { Alert } from "../../interfaces/interfaces";
 import styles from "./Notification.module.scss";
 
 export default function Notification({
-  message,
-  severity,
+  notification,
 }: {
-  message: string | null;
-  severity: string;
+  notification: Alert;
 }) {
-  if (message) {
+  if (notification?.message) {
     return (
       <div
-        className={`${styles.error} ${
-          severity === "error"
+        className={`${styles.notification} ${
+          notification?.severity === "error"
             ? styles.error
-            : severity === "success"
+            : notification?.severity === "success"
             ? styles.success
             : ""
         }`}
       >
-        <p>{message}</p>
+        <p>{notification.message}</p>
       </div>
     );
   } else {
-    return <></>;
+    return null;
   }
 }

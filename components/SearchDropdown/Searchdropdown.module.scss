@@ -1,0 +1,53 @@
+@import "../../styles/partials/variables.scss";
+.search_dropdown {
+  position: relative;
+  z-index: 3;
+  background-color: $lighterGrayColor;
+  border-radius: $roundedSmall;
+  width: 100%;
+  padding: 0.75rem;
+  color: $lightGrayColor;
+  position: relative;
+  cursor: pointer;
+  > .shield {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    > i {
+      transition: all 250ms;
+      margin-right: 0.75rem;
+    }
+    > input {
+      flex: 1;
+      background: none;
+      color: $lightGrayColor;
+      &::placeholder {
+        color: $lightGrayColor;
+      }
+    }
+  }
+  > ul {
+    max-height: 0;
+    transition: all 250ms;
+    overflow: hidden;
+    background-color: $lighterGrayColor;
+
+    > li {
+      padding: 0.5rem;
+      transition: all 250ms;
+      border-radius: $roundedSmall;
+      display: flex;
+      align-items: center;
+      gap: 0 0.5rem;
+      &:hover {
+        background-color: $lighterGrayColorHover;
+      }
+      &:first-child {
+        margin-top: 1rem;
+      }
+    }
+    &.open {
+      max-height: 500px;
+    }
+  }
+}

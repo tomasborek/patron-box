@@ -37,7 +37,7 @@ export default async function handler(
         id: user.id,
         name: user.name,
         email: user.email,
-        institution: user.institution.name,
+        institution: user.institution?.name,
         admin: user.admin,
       },
       process.env.JWT_SECRET
@@ -45,6 +45,7 @@ export default async function handler(
 
     return res.status(200).send({ token });
   } catch (error) {
+    console.log(error);
     return res.status(500).send(error);
   }
 }

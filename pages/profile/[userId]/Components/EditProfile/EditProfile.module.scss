@@ -1,0 +1,32 @@
+@import "../../../../../styles/partials/variables.scss";
+.edit_profile {
+  padding: 2rem;
+  > header {
+    margin-bottom: 2rem;
+  }
+  > section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    > .item {
+      > p {
+        &:first-of-type {
+          color: $lightGrayColor;
+          margin-bottom: 0.5rem;
+        }
+        &:last-of-type {
+          font-weight: bold;
+        }
+      }
+      > .institution_actions {
+        display: flex;
+        align-items: center;
+        gap: 0 1rem;
+        > i {
+          color: $errorColor;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

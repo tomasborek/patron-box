@@ -8,7 +8,13 @@ import { QueryClientProvider, QueryClient } from "react-query";
 import AuthProvider from "../contexts/AuthContext";
 
 export default function MyApp({ Component, pageProps }) {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 10000,
+      },
+    },
+  });
   return (
     <>
       <Head>

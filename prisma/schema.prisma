@@ -13,29 +13,27 @@ model User{
   name String
   email String @unique
   verified Boolean @default(false)
-  institution Institution @relation(fields: [institutionId], references: [id])
-  institutionId Int
   reservations Reservation[]
   password String
   admin Boolean @default(false)
+  institution Institution? @relation(references: [id], fields: [institutionId])
+  institutionId Int?
 }
 
 model Institution{
   id Int @id @default(autoincrement())
   name String @unique
-  password String?
-  emailFormat String?
-  authForm String
-  stations Station[]
   users User[]
+  stations Station[]
+  password String
 }
 
 model Station{
   id Int @id @default(autoincrement())
-  localId Int
+  address String @unique
+  institution Institution? @relation(references: [id], fields: [institutionId])
+  institutionId Int?
   boxes Box[]
-  institution Institution @relation(fields: [institutionId], references: [id])
-  institutionId Int
 }
 
 model Box{
@@ -59,3 +57,21 @@ model Reservation{
   startTime DateTime @default(now())
   endTime DateTime
 }
+
+model Record{
+  id Int @id @default(autoincrement())
+  reservationId Int @unique
+  userId Int 
+  stationId Int 
+  length Int
+  startTime DateTime @default(now())
+  opened OpenRecord[]
+}
+
+model OpenRecord{
+  id Int @id @default(autoincrement())
+  time DateTime @default(now())
+  record Record @relation(references: [id], fields: [referenceId])
+  referenceId Int @unique
+}
+

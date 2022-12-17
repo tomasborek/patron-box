@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken";
 
 export const authentificate = (token: string) => {
-  token = token.split(" ")[1];
   try {
-    jwt.verify(token, process.env.JWT_SECRET);
-    return true;
+    token = token.split(" ")[1];
+    return jwt.verify(token, process.env.JWT_SECRET);
   } catch (error) {
     return false;
   }
@@ -15,10 +14,10 @@ export const authorize = (
   id: number = null,
   email: string = null
 ) => {
-  token = token.split(" ")[1];
   try {
+    token = token.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.id != id && decoded.email != email) return false;
+    if (decoded.id != id && decoded.email != email) return decoded;
     return true;
   } catch (error) {
     return false;
@@ -26,11 +25,11 @@ export const authorize = (
 };
 
 export const authorizeAdmin = (token: string) => {
-  token = token.split(" ")[1];
   try {
+    token = token.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded.admin) return false;
-    return true;
+    return decoded;
   } catch (error) {
     return false;
   }

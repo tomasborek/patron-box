@@ -1,0 +1,54 @@
+@import "../../../../../styles/partials/variables.scss";
+.reservations {
+  padding: 2rem;
+  width: 100%;
+  flex: 1;
+  > header {
+    margin-bottom: 2rem;
+  }
+  > section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem 0;
+    > .reservation {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem 0;
+      background-color: white;
+      padding: 1rem;
+      border: 1px solid $lighterGrayColor;
+      border-radius: $roundedMedium;
+      width: 100%;
+      > header {
+        display: flex;
+        gap: 0 1rem;
+        align-items: center;
+        > .active_status {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: green;
+        }
+      }
+      > .content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem 0;
+        > .item {
+          > p {
+            color: $lightGrayColor;
+          }
+        }
+        > a {
+          text-decoration: underline;
+          color: $lightGrayColor;
+        }
+      }
+      > .actions {
+        display: flex;
+        gap: 0 2rem;
+      }
+    }
+  }
+}

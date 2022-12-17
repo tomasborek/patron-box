@@ -1,6 +1,9 @@
+import Joi from "joi";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../db/prisma";
 import { authorize, authorizeAdmin } from "../../../../utils/auth";
+import { getParam } from "../../../../utils/helpers";
+import bcrypt from "bcrypt";
 
 export default async function Hanlder(
   req: NextApiRequest,
@@ -8,6 +11,8 @@ export default async function Hanlder(
 ) {
   if (req.method === "GET") {
     return getUser(req, res);
+  } else if (req.method === "PATCH") {
+    return updateUser(req, res);
   } else if (req.method === "DELETE") {
     return deleteUser(req, res);
   } else {
@@ -18,9 +23,7 @@ export default async function Hanlder(
 }
 
 const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
-  const id: number = Array.isArray(req.query.userId)
-    ? parseInt(req.query.userId[0])
-    : parseInt(req.query.userId);
+  const id: number = Number(getParam(req, "userId"));
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -31,7 +34,12 @@ const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
         name: true,
         email: true,
         verified: true,
-        institutionId: true,
+        institution: true,
+        reservations: {
+          include: {
+            box: { include: { station: true } },
+          },
+        },
       },
     });
     if (!user) {
@@ -42,11 +50,24 @@ const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(500).send(error);
   }
 };
+const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
+  const token: string = req.headers.authorization;
+  const id: number = Number(getParam(req, "userId"));
+  if (!authorize(token, id))
+    return res.status(401).send({ message: "Unauthorized" });
+  try {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { name: req.body.name },
+    });
+    return res.status(200).send(user);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
 const deleteUser = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = req.headers.authorization;
-  const id: number = Array.isArray(req.query.userId)
-    ? Number.parseInt(req.query.userId[0])
-    : Number.parseInt(req.query.userId);
+  const id: number = Number(getParam(req, "userId"));
   if (!authorize(token, id) && !authorizeAdmin(token)) {
     return res.status(401).send({ message: "Unauthorized" });
   }

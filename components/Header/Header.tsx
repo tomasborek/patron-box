@@ -4,11 +4,11 @@ import Link from "next/link";
 //styles
 import styles from "./Header.module.scss";
 //contexts
-import { useAuth } from "../../contexts/AuthContext";
+import { CurrentUser, useAuth } from "../../contexts/AuthContext";
 import Dropdown from "../Dropdown/Dropdown";
 
 export default function Header() {
-  const { currentUser, logOut } = useAuth();
+  const { currentUser }: { currentUser: CurrentUser } = useAuth();
   return (
     <header className={styles.header}>
       <div className={styles.brand}>
@@ -43,14 +43,21 @@ export default function Header() {
 }
 
 const UserInfo = () => {
-  const { currentUser, logOut } = useAuth();
+  const {
+    currentUser,
+    logOut,
+  }: { currentUser: CurrentUser; logOut: () => void } = useAuth();
   return (
     <div className={styles.user_info}>
       <Dropdown action name={currentUser.name}>
-        <li>
-          <i className="fas fa-user"></i>
-          <p>Profil</p>
-        </li>
+        <Link href={`/profile/${currentUser.id}`}>
+          <li>
+            <>
+              <i className="fas fa-user"></i>
+              <p>Profil</p>
+            </>
+          </li>
+        </Link>
         <li onClick={logOut}>
           <i className="fas fa-right-from-bracket"></i>
           <p>Odhlásit se</p>

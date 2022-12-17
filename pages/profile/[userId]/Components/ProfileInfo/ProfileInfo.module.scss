@@ -1,0 +1,28 @@
+@import "../../../../../styles/partials/variables.scss";
+.profile_info {
+  padding: 2rem;
+  > header {
+    margin-bottom: 2rem;
+  }
+  > section {
+    > header {
+      margin-bottom: 1rem;
+    }
+    > section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      > .item {
+        > p {
+          &:first-child {
+            color: $lightGrayColor;
+            font-size: 14px;
+          }
+          &:last-child {
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}

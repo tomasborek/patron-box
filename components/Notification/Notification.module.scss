@@ -1,8 +1,9 @@
 @import "../../styles/partials/variables.scss";
-.error {
+.notification {
   padding: 0.5rem;
   width: 100%;
   border-radius: $roundedSmall;
+  margin-bottom: 1rem;
   > p {
     text-align: center;
   }
